@@ -1,60 +1,59 @@
 #include "sort.h"
+#include <stdlib.h>
 
 /**
- * swapme - swap the nodes themselves.
- * @current: pointer.
- * @current_old: pointer.
- * @list: doubly linked list
+ * arr_max - array max
+ * @array: array
+ * @size: size of the array
+ * Return: max
  */
-void swapme(listint_t *current, listint_t *current_old, listint_t **list)
+int arr_max(int *array, size_t size)
 {
-	listint_t *temp1 = current->next;
-	listint_t *temp2 = current_old->prev;
+	int max;
+	size_t i;
 
-	if (temp1 != NULL)
-		temp1->prev = current_old;
-	if (temp2 != NULL)
-		temp2->next = current;
-	current->prev = temp2;
-	current_old->next = temp1;
-	current->next = current_old;
-	current_old->prev = current;
-	if (*list == current_old)
-		*list = current;
-	print_list(*list);
+	max = array[0];
+	for (i = 1; i < size; i++)
+		if (array[i] > max)
+			max = array[i];
+	return (max);
 }
 
 /**
- * cocktail_sort_list - cocktail_sort_list
- *
- * @list: doubly linked list
+ * counting_sort - sorts an array with the Counting sort algorithm
+ * @array: array to sort
+ * @size: size of the array
  */
-void cocktail_sort_list(listint_t **list)
+void counting_sort(int *array, size_t size)
 {
-	listint_t *check = *list, *first = NULL, *last = NULL;
+	int *arr, *o_arr, max, num;
+	size_t i;
 
-	if (!list)
+	if (size < 2 || !array)
 		return;
-	if (!(*list))
-		return;
-	if (!(*list)->next)
-		return;
-	do {
-		while (check->next)
-		{
-			if (check->n > check->next->n)
-				swapme(check->next, check, list);
-			else
-				check = check->next;
-		}
-		last = check;
-		while (check->prev != first)
-		{
-			if (check->n < check->prev->n)
-				swapme(check, check->prev, list);
-			else
-				check = check->prev;
-		}
-		first = check;
-	} while (first != last);
+	max = arr_max(array, size);
+
+	arr = malloc(sizeof(size_t) * (max + 1));
+	o_arr = malloc(sizeof(int) * size);
+
+	for (i = 0; (int)i <= max; i++)
+		arr[i] = 0;
+	for (i = 0; i < size; i++)
+	{
+		num = array[i];
+		arr[num] += 1;
+	}
+	for (i = 1; (int)i <= max; i++)
+		arr[i] += arr[i - 1];
+	print_array(arr, max + 1);
+	for (i = 0; i < size; i++)
+	{
+		o_arr[arr[array[i]] - 1] = array[i];
+		arr[array[i]]--;
+	}
+	for (i = 0; i < size; i++)
+		array[i] = o_arr[i];
+
+	free(o_arr);
+	free(arr);
 }
